@@ -1,6 +1,6 @@
 # PrintOptimizer_BD
 
-![PrintOptimizer Logo](https://via.placeholder.com/150) <!-- Sustituye este link con el logo si tienes uno disponible -->
+![PrintOptimizer Logo](/static/logo.svg)
 
 **PrintOptimizer_BD** es una herramienta de gestión de proyectos de impresión 3D, orientada a automatizar la generación de descripciones, análisis de costos, gestión de insumos y estadísticas de mercado, especialmente útil para diseñadores de modelos 3D y técnicos de producción.
 
