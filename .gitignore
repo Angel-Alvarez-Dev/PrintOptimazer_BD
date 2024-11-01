@@ -21,3 +21,6 @@ Thumbs.db
 # Configuración IDEs
 .idea/
 .vscode/
+
+# Script de configuración
+setup_project.sh
