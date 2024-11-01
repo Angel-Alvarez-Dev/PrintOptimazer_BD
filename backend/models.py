@@ -1,95 +1,94 @@
-from sqlalchemy import Column,Integer, String, Float, Boolean ,ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from .database import Base
+from datetime import datetime
 
-class Uset(Base):
-    __tablename__= "user"
-    id = Column (Intriger, primary_key=True, index=True)
-    username = Column(String, email=Column(String, unique=True, index=True))
-    password = Column (String)
+class UserRole(Base):
+    __tablename__ = "user_roles"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)  # Nombre del rol (Admin, User, etc.)
 
-    projects = relationship("Proyects", back_populates="owenr")
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    password_hash = Column(String)  
+    role_id = Column(Integer, ForeignKey("user_roles.id"))
+
+    role = relationship("UserRole")
+    projects = relationship("Project", back_populates="owner")
+
+class Category(Base):
+    __tablename__ = "categories"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)  # Nombre de categoría
+
+    projects = relationship("Project", back_populates="category")
+
+class Tag(Base):
+    __tablename__ = "tags"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+
+    project_tags = relationship("ProjectTag", back_populates="tag")
+
+class ProjectTag(Base):
+    __tablename__ = "project_tags"
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    tag_id = Column(Integer, ForeignKey("tags.id"))
+
+    project = relationship("Project", back_populates="tags")
+    tag = relationship("Tag", back_populates="project_tags")
 
 class Project(Base):
-        __tablename__= "project"
-        id = Column (Integer, primary_key=True, index=True)
-        user_id = Column(Integer, ForeignKey("user.id"))
-        name = Column (String, index=True)
-        description = Column(String)
-        tags = Column(String)
-        categoria = Column(String)
+    __tablename__ = "projects"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    category_id = Column(Integer, ForeignKey("categories.id"))  
+    name = Column(String, index=True)
+    description = Column(String)
 
-        owend = relationship("User", back_populates="projects")
-        matirials_used= relationship("MatirialUsage", back_populates="project")
-        costs = relationship ("ProjectCost", uselist=False)
-        back_populates=("projects")
-        atats = relationship("MarketStat", back_populates="project")
+    owner = relationship("User", back_populates="projects")
+    category = relationship("Category", back_populates="projects")
+    tags = relationship("ProjectTag", back_populates="project")
+    cost_details = relationship("ProjectCost", uselist=False, back_populates="project")
+    stats = relationship("MarketStat", back_populates="project")
 
-class Matirial(Base):
-            __tablename__="materials"
-            id= Column(Integer, primary_key=True, index=True)
-            name_material = Column(String, index=True)
-            cost_per_kg= Column(Float)
-            parameters = Column(String)
-            supplier = Column(String)
-            color = Column(String)
-            weight_kg = Column(Float)
-            stock = Column(Boolean)
-            in_use = Column(Boolean)
-            
-            usage = relationship("MatirialUsage", back_populates="material")
+class ProjectCostHistory(Base):
+    __tablename__ = "project_cost_history"
+    id = Column(Integer, primary_key=True)
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    material_cost = Column(Float)
+    energy_cost = Column(Float)
+    labor_cost = Column(Float)
+    maintenance_cost = Column(Float)
+    total_cost = Column(Float)
+    recorded_at = Column(DateTime, default=datetime.utcnow)  # Timestamp de registro del costo
 
-class MatirialUsage(Base):
-            __tablename__="materials_usage"
-            id = Column(Integer, primary_key=True ,index=True)
-            project_id= Column(Integer, ForeignKey("project.id"))
-            matirial_id= Column(Integer, ForeignKey("matirial.id"))
-            amount_used= Column(Float)
-            cost = Column(Float)
+    project = relationship("Project", back_populates="cost_history")
 
-            project = relationship("Project", back_populates="material_used")
+class MarketStat(Base):
+    __tablename__ = "market_stats"
+    id = Column(Integer, primary_key=True, index=True)
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    platform_id = Column(Integer, ForeignKey("platforms.id"))
+    views = Column(Integer)
+    downloads = Column(Integer)
+    sales = Column(Integer)
+    revenue = Column(Float)
 
-            matirial = relationship("Material", back_populates="usage")
+    project = relationship("Project", back_populates="stats")
+    platform = relationship("Platform")
+    sales_regions = relationship("SalesRegionStat", back_populates="market_stat")
 
+class SalesRegionStat(Base):
+    __tablename__ = "sales_region_stats"
+    id = Column(Integer, primary_key=True, index=True)
+    market_stat_id = Column(Integer, ForeignKey("market_stats.id"))
+    region = Column(String)  # Región o país
+    sales = Column(Integer)
+    revenue = Column(Float)
 
-
-class ProjectCost(Base):
-        __tablename__= "project_cost"
-        id= Column(Integer, primary_key=True, index=True)
-        project_id= Column(Integer, ForeignKey("projects.id"))
-        matirial_cost= Column(Float)
-        energy_cost= Column(Float)
-        labor_cost= Column(Float)
-        maitenace_cost= Column(Float)
-        total_cost= Column(Float)
-
-        project = relationship("Project", back_populates="costs")
-
-class Platform(Base):
-        __tablename__= "platforms"
-        id = Column(Integer, primary_key=True, index=True)
-        name = Column(String, index=True)
-        gmail_implement= Column(String)
-        password= Column(String)
-        commission= Column(Float)
-        payment= Column(String)
-        File_types = Column(String)
-        foreign_exchange = Column(String)
-        url = Column(String)
-
-class marketStat (Base):
-        __tablenam__= "market_stats"
-        id = Column(Integer, primary_key=True, index=True)
-        project_id = Column(Integer, ForeignKey("projects.id"))
-        platform_id = Column(Integer, ForeignKey("plataforms.id"))
-        views = Column(Integer)
-        downloads = Column(Integer)
-        sales = Column(Integer)
-        revenue  = Column(Float)
-        sales_region= Column(String)
-
-
-        project = relationship("Project", back_populates="stats")
-        plataform =relationship("Platfrom")
-
-
+    market_stat = relationship("MarketStat", back_populates="sales_regions")
