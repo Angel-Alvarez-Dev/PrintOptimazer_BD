@@ -1,0 +1,23 @@
+# Archivos y directorios de Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Configuración de entornos virtuales
+venv/
+.env
+
+# Configuración de logs y archivos de caché
+*.log
+*.cache
+
+# Migraciones y archivos temporales de la base de datos
+migrations/
+
+# Archivos específicos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración IDEs
+.idea/
+.vscode/
