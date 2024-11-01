@@ -1,7 +1,8 @@
-fastapi
-sqlalchemy
-psycopg2
-alembic
-uvicorn
-pydantic
-python-dotenv
+fastapi            # Framework web para crear APIs
+sqlalchemy         # ORM para interactuar con la base de datos
+psycopg2           # Controlador para PostgreSQL
+alembic            # Herramienta de migración de bases de datos para SQLAlchemy
+uvicorn            # Servidor ASGI para ejecutar aplicaciones de FastAPI
+pydantic           # Validación de datos y modelos de datos para FastAPI
+python-dotenv      # Carga variables de entorno desde un archivo .env
+Faker              # Generador de datos aleatorios para poblar la base de datos
