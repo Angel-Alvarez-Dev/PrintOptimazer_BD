@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from faker import Faker
 from ..backend.database import Base
 from ..backend.main import app, get_db
 from ..backend import schemas
@@ -12,6 +13,9 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 # Crear la base de datos y tablas para pruebas
 Base.metadata.create_all(bind=engine)
+
+# Instancia de Faker
+fake = Faker()
 
 # Dependency override para usar la base de datos de prueba
 def override_get_db():
@@ -25,29 +29,34 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
-# Pruebas para User
+# Pruebas para User con Faker
 def test_create_user():
-    response = client.post("/users/", json={"username": "testuser", "email": "testuser@example.com", "password": "password123"})
+    username = fake.user_name()
+    email = fake.email()
+    response = client.post("/users/", json={"username": username, "email": email, "password": "password123"})
     assert response.status_code == 200
     data = response.json()
-    assert data["username"] == "testuser"
-    assert data["email"] == "testuser@example.com"
+    assert data["username"] == username
+    assert data["email"] == email
 
 def test_get_user():
-    response = client.post("/users/", json={"username": "testuser2", "email": "testuser2@example.com", "password": "password123"})
+    username = fake.user_name()
+    email = fake.email()
+    response = client.post("/users/", json={"username": username, "email": email, "password": "password123"})
     user_id = response.json()["id"]
     response = client.get(f"/users/{user_id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["username"] == "testuser2"
-    assert data["email"] == "testuser2@example.com"
+    assert data["username"] == username
+    assert data["email"] == email
 
-# Pruebas para Category
+# Pruebas para Category con Faker
 def test_create_category():
-    response = client.post("/categories/", json={"name": "TestCategory"})
+    category_name = fake.word()
+    response = client.post("/categories/", json={"name": category_name})
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "TestCategory"
+    assert data["name"] == category_name
 
 def test_get_categories():
     response = client.get("/categories/")
@@ -55,36 +64,41 @@ def test_get_categories():
     data = response.json()
     assert len(data) > 0  # Asegurarse de que haya al menos una categoría
 
-# Pruebas para Project
+# Pruebas para Project con Faker
 def test_create_project():
     # Crear un usuario primero
-    user_response = client.post("/users/", json={"username": "projectuser", "email": "projectuser@example.com", "password": "password123"})
+    user_response = client.post("/users/", json={"username": fake.user_name(), "email": fake.email(), "password": "password123"})
     user_id = user_response.json()["id"]
+    
     # Crear una categoría
-    category_response = client.post("/categories/", json={"name": "ProjectCategory"})
+    category_response = client.post("/categories/", json={"name": fake.word()})
     category_id = category_response.json()["id"]
 
     # Crear el proyecto
+    project_name = fake.sentence(nb_words=3)
+    project_description = fake.text(max_nb_chars=50)
     response = client.post("/projects/", json={
-        "name": "Test Project",
-        "description": "A project for testing",
+        "name": project_name,
+        "description": project_description,
         "category_id": category_id,
         "user_id": user_id
     })
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "Test Project"
-    assert data["description"] == "A project for testing"
+    assert data["name"] == project_name
+    assert data["description"] == project_description
 
 def test_get_project():
     # Crear un proyecto para obtenerlo
-    user_response = client.post("/users/", json={"username": "getprojectuser", "email": "getprojectuser@example.com", "password": "password123"})
+    user_response = client.post("/users/", json={"username": fake.user_name(), "email": fake.email(), "password": "password123"})
     user_id = user_response.json()["id"]
-    category_response = client.post("/categories/", json={"name": "GetProjectCategory"})
+    category_response = client.post("/categories/", json={"name": fake.word()})
     category_id = category_response.json()["id"]
+    project_name = fake.sentence(nb_words=3)
+    project_description = fake.text(max_nb_chars=50)
     project_response = client.post("/projects/", json={
-        "name": "Another Test Project",
-        "description": "Another project for testing",
+        "name": project_name,
+        "description": project_description,
         "category_id": category_id,
         "user_id": user_id
     })
@@ -94,5 +108,5 @@ def test_get_project():
     response = client.get(f"/projects/{project_id}")
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "Another Test Project"
-    assert data["description"] == "Another project for testing"
+    assert data["name"] == project_name
+    assert data["description"] == project_description
