@@ -1,10 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-
-from . import models, schemas
-from . import crud
-from .database import SessionLocal, engine
 from typing import List
+
+from . import models, schemas, crud
+from .database import SessionLocal, engine
 
 # Crear la aplicación FastAPI
 app = FastAPI(title="PrintOptimizer_BD")
@@ -20,7 +19,7 @@ def get_db():
     finally:
         db.close()
 
-# Rutas para Users
+# Rutas para Usuarios
 @app.post("/users/", response_model=schemas.User, summary="Crear un nuevo usuario")
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -35,7 +34,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_user
 
-# Rutas para Categories
+# Rutas para Categorías
 @app.post("/categories/", response_model=schemas.Category, summary="Crear una nueva categoría")
 def create_category(category: schemas.CategoryCreate, db: Session = Depends(get_db)):
     return crud.create_category(db=db, category=category)
@@ -44,7 +43,7 @@ def create_category(category: schemas.CategoryCreate, db: Session = Depends(get_
 def read_categories(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_categories(db, skip=skip, limit=limit)
 
-# Rutas para Projects
+# Rutas para Proyectos
 @app.post("/projects/", response_model=schemas.Project, summary="Crear un nuevo proyecto")
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
     return crud.create_project(db=db, project=project)
@@ -77,6 +76,7 @@ def read_market_stat(market_stat_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Estadísticas de mercado no encontradas")
     return db_market_stat
 
+# Ruta raíz de bienvenida
 @app.get("/", summary="Página de inicio")
 def read_root():
     return {"message": "Bienvenido a la API de PrintOptimizer_BD"}

@@ -1,3 +1,6 @@
+Claro, aquí tienes la actualización del archivo `README.md`:
+
+```markdown
 # PrintOptimizer_BD
 
 ![PrintOptimizer Logo](/static/logo.svg)
@@ -55,8 +58,10 @@ PrintOptimizer_BD/
 ├── .gitignore               # Archivo de exclusión de Git
 ├── requirements.txt         # Lista de dependencias del proyecto
 └── README.md                # Documentación del proyecto
----
 ```
+
+---
+
 ## Configuración Inicial
 
 1. Clona el repositorio:
@@ -82,12 +87,14 @@ PrintOptimizer_BD/
    python app/populate_db.py
    ```
 
+---
+
 ## Ejecución
 
 Inicia el servidor de desarrollo de FastAPI:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn PrintOptimazer_BD.app.main:app --reload --log-level debug
 ```
 
 La API estará disponible en [http://127.0.0.1:8000](http://127.0.0.1:8000).

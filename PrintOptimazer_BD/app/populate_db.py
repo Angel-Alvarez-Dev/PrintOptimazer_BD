@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from backend.database import Base
-from backend.models import User, UserRole, Project, Category, Tag, ProjectTag, ProjectCostHistory, Platform, MarketStat, SalesRegionStat
+from PrintOptimazer_BD.app.database import Base
+from PrintOptimazer_BD.app.models import User, UserRole, Project, Category, Tag, ProjectTag, ProjectCostHistory, Platform, MarketStat, SalesRegionStat
 
 # Crea la base de datos
 DATABASE_URL = "sqlite:///./test.db"  # Cambia esta URL según tu configuración
