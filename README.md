@@ -1,5 +1,3 @@
-Claro, aquí tienes la actualización del archivo `README.md`:
-
 ```markdown
 # PrintOptimizer_BD
 
