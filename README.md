@@ -1,4 +1,3 @@
-```markdown
 # PrintOptimizer_BD
 
 ![PrintOptimizer Logo](/static/logo.svg)
@@ -56,9 +55,6 @@ PrintOptimizer_BD/
 ├── .gitignore               # Archivo de exclusión de Git
 ├── requirements.txt         # Lista de dependencias del proyecto
 └── README.md                # Documentación del proyecto
-```
-
----
 
 ## Configuración Inicial
 
