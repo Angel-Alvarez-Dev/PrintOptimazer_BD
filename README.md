@@ -1,4 +1,3 @@
-```markdown
 # PrintOptimizer_BD
 
 ![PrintOptimizer Logo](/static/logo.svg)
@@ -40,7 +39,6 @@
 La arquitectura del proyecto está basada en **FastAPI** para el backend y la gestión de rutas de la API. **SQLAlchemy** es utilizado para la interacción con la base de datos, y **Alembic** facilita el control de versiones y migraciones de la base de datos. **PostgreSQL** es el sistema de gestión de bases de datos, alojado en un servidor de WSL para pruebas y desarrollo.
 
 ### Estructura del Proyecto
-
 ```plaintext
 PrintOptimizer_BD/
 ├── app/
