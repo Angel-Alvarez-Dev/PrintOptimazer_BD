@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from faker import Faker
 import random
-from datetime import datetime
 from PrintOptimazer_BD.backend.models import User, UserRole, Project, Category, Tag, ProjectTag, ProjectCost, ProjectCostHistory, Material, MaterialUsage, MarketStat, SalesRegionStat, Platform  # Importa tus modelos
 from database import engine  # Asume que tienes un archivo de configuración de Base de Datos
 
@@ -17,12 +16,21 @@ def populate_roles(session):
 
 def populate_users(session, roles):
     users = []
-    for _ in range(10):
+    user_data = [
+        {"username": "jdoe", "email": "jdoe@example.com", "password": "password123", "role": "User"},
+        {"username": "asmith", "email": "asmith@example.com", "password": "password123", "role": "Admin"},
+        {"username": "mbrown", "email": "mbrown@example.com", "password": "password123", "role": "Editor"},
+        {"username": "cjohnson", "email": "cjohnson@example.com", "password": "password123", "role": "User"},
+        {"username": "lwhite", "email": "lwhite@example.com", "password": "password123", "role": "User"},
+    ]
+    
+    for data in user_data:
+        role = next((r for r in roles if r.name == data['role']), None)
         user = User(
-            username=fake.user_name(),
-            email=fake.email(),
+            username=data['username'],
+            email=data['email'],
             password_hash=fake.sha256(),  # Genera un hash aleatorio simulado
-            role_id=random.choice(roles).id
+            role_id=role.id if role else None
         )
         users.append(user)
     session.add_all(users)

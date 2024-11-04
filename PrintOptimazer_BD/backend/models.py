@@ -6,7 +6,7 @@ from datetime import datetime
 class UserRole(Base):
     __tablename__ = "user_roles"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False)  # Nombre del rol (Admin, User, etc.)
+    name = Column(String, unique=True, nullable=False)
 
 class User(Base):
     __tablename__ = "users"
@@ -22,7 +22,7 @@ class User(Base):
 class Category(Base):
     __tablename__ = "categories"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False)  # Nombre de categoría
+    name = Column(String, unique=True, nullable=False)
 
     projects = relationship("Project", back_populates="category")
 
@@ -65,9 +65,17 @@ class ProjectCostHistory(Base):
     labor_cost = Column(Float)
     maintenance_cost = Column(Float)
     total_cost = Column(Float)
-    recorded_at = Column(DateTime, default=datetime.utcnow)  # Timestamp de registro del costo
+    recorded_at = Column(DateTime, default=datetime.utcnow)
 
     project = relationship("Project", back_populates="cost_history")
+
+class Platform(Base):
+    __tablename__ = "platforms"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+
+    market_stats = relationship("MarketStat", back_populates="platform")
 
 class MarketStat(Base):
     __tablename__ = "market_stats"
@@ -80,14 +88,14 @@ class MarketStat(Base):
     revenue = Column(Float)
 
     project = relationship("Project", back_populates="stats")
-    platform = relationship("Platform")
+    platform = relationship("Platform", back_populates="market_stats")
     sales_regions = relationship("SalesRegionStat", back_populates="market_stat")
 
 class SalesRegionStat(Base):
     __tablename__ = "sales_region_stats"
     id = Column(Integer, primary_key=True, index=True)
     market_stat_id = Column(Integer, ForeignKey("market_stats.id"))
-    region = Column(String)  # Región o país
+    region = Column(String)
     sales = Column(Integer)
     revenue = Column(Float)
 
