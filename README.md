@@ -173,6 +173,3 @@ pytest
 ¡Las contribuciones son bienvenidas! Si deseas colaborar, abre un **issue** o crea un **pull request**. Por favor, asegúrate de seguir las guías de estilo y documentar adecuadamente tus cambios.
 
 ---
-
-Con esta estructura y funcionalidades, **PrintOptimizer_BD** busca facilitar la gestión de proyectos de impresión 3D, optimizando la carga y monitoreo de modelos en el mercado.
-```
