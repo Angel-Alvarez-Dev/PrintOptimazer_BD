@@ -1,4 +1,4 @@
-# backend/app/__init__.py
+# backend/__init__.py
 
 from .database import Base, SessionLocal, engine
 from .models import User, UserRole, Category, Tag, Project, ProjectTag, ProjectCostHistory, MarketStat, SalesRegionStat

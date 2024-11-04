@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from . import models, schemas, crud
+
+from . import models, schemas
+from . import crud
 from .database import SessionLocal, engine
 from typing import List
 
@@ -74,3 +76,7 @@ def read_market_stat(market_stat_id: int, db: Session = Depends(get_db)):
     if db_market_stat is None:
         raise HTTPException(status_code=404, detail="Estadísticas de mercado no encontradas")
     return db_market_stat
+
+@app.get("/", summary="Página de inicio")
+def read_root():
+    return {"message": "Bienvenido a la API de PrintOptimizer_BD"}
