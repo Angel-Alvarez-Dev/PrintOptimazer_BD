@@ -55,7 +55,8 @@ PrintOptimizer_BD/
 ├── .gitignore               # Archivo de exclusión de Git
 ├── requirements.txt         # Lista de dependencias del proyecto
 └── README.md                # Documentación del proyecto
-
+---
+```
 ## Configuración Inicial
 
 1. Clona el repositorio:
@@ -80,8 +81,6 @@ PrintOptimizer_BD/
    ```bash
    python app/populate_db.py
    ```
-
----
 
 ## Ejecución
 
