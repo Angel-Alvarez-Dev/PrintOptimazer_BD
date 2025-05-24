@@ -23,7 +23,8 @@ install: ## Instalar dependencias de producción
 dev-install: install ## Instalar dependencias de desarrollo
 	@echo "$(GREEN)Instalando dependencias de desarrollo...$(NC)"
 	$(PIP) install -r requirements-dev.txt
-	pre-commit install
+	@echo "$(GREEN)Instalando pre-commit hooks...$(NC)"
+	pre-commit install || echo "Pre-commit no disponible"
 
 run: ## Ejecutar aplicación localmente
 	@echo "$(GREEN)Iniciando aplicación...$(NC)"
@@ -31,11 +32,19 @@ run: ## Ejecutar aplicación localmente
 
 test: ## Ejecutar tests
 	@echo "$(GREEN)Ejecutando tests...$(NC)"
-	pytest tests/ -v
+	PYTHONPATH=src pytest tests/ -v
 
 test-cov: ## Ejecutar tests con cobertura
 	@echo "$(GREEN)Ejecutando tests con cobertura...$(NC)"
-	pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+	PYTHONPATH=src pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+
+test-unit: ## Ejecutar solo tests unitarios
+	@echo "$(GREEN)Ejecutando tests unitarios...$(NC)"
+	PYTHONPATH=src pytest tests/unit/ -v
+
+test-integration: ## Ejecutar solo tests de integración
+	@echo "$(GREEN)Ejecutando tests de integración...$(NC)"
+	PYTHONPATH=src pytest tests/integration/ -v
 
 lint: ## Ejecutar linters
 	@echo "$(GREEN)Running flake8...$(NC)"
