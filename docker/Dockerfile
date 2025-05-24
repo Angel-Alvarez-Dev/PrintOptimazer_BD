@@ -5,7 +5,8 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    PYTHONPATH=/app/src
 
 # Directorio de trabajo
 WORKDIR /app
@@ -26,6 +27,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY alembic.ini ./
 COPY scripts/ ./scripts/
+
+# Crear directorio de logs
+RUN mkdir -p /app/logs
 
 # Hacer ejecutables los scripts
 RUN chmod +x scripts/*.sh 2>/dev/null || true

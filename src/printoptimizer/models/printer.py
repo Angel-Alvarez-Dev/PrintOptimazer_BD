@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, List, Optional
 from enum import Enum
 
 from sqlalchemy import Boolean, Column, Enum as SQLEnum, Float, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm.relationships import RelationshipProperty
 
 from printoptimizer.models.base import Base
 
@@ -38,50 +39,50 @@ class Printer(Base):
     __tablename__ = "printers"
     
     # Información básica
-    name = Column(String(100), nullable=False, unique=True)
-    model = Column(String(100), nullable=False)
-    manufacturer = Column(String(100))
-    serial_number = Column(String(100), unique=True)
+    name: Mapped[str] = Column(String(100), nullable=False, unique=True)
+    model: Mapped[str] = Column(String(100), nullable=False)
+    manufacturer: Mapped[Optional[str]] = Column(String(100))
+    serial_number: Mapped[Optional[str]] = Column(String(100), unique=True)
     
     # Tipo y estado
-    printer_type = Column(SQLEnum(PrinterType), nullable=False)
-    status = Column(
+    printer_type: Mapped[PrinterType] = Column(SQLEnum(PrinterType), nullable=False)
+    status: Mapped[PrinterStatus] = Column(
         SQLEnum(PrinterStatus),
         nullable=False,
         default=PrinterStatus.OFFLINE,
     )
     
     # Ubicación
-    location = Column(String(200))
-    department = Column(String(100))
-    floor = Column(Integer)
+    location: Mapped[Optional[str]] = Column(String(200))
+    department: Mapped[Optional[str]] = Column(String(100))
+    floor: Mapped[Optional[int]] = Column(Integer)
     
     # Configuración de red
-    ip_address = Column(String(45))  # Soporta IPv4 e IPv6
-    mac_address = Column(String(17))
-    hostname = Column(String(255))
+    ip_address: Mapped[Optional[str]] = Column(String(45))  # Soporta IPv4 e IPv6
+    mac_address: Mapped[Optional[str]] = Column(String(17))
+    hostname: Mapped[Optional[str]] = Column(String(255))
     
     # Capacidades
-    color_printing = Column(Boolean, default=False)
-    duplex_printing = Column(Boolean, default=False)
-    max_paper_width = Column(Float)  # en mm
-    max_paper_height = Column(Float)  # en mm
-    supported_paper_sizes = Column(Text)  # JSON array
+    color_printing: Mapped[bool] = Column(Boolean, default=False)
+    duplex_printing: Mapped[bool] = Column(Boolean, default=False)
+    max_paper_width: Mapped[Optional[float]] = Column(Float)  # en mm
+    max_paper_height: Mapped[Optional[float]] = Column(Float)  # en mm
+    supported_paper_sizes: Mapped[Optional[str]] = Column(Text)  # JSON array
     
     # Estadísticas
-    total_pages_printed = Column(Integer, default=0)
-    total_jobs_completed = Column(Integer, default=0)
+    total_pages_printed: Mapped[int] = Column(Integer, default=0)
+    total_jobs_completed: Mapped[int] = Column(Integer, default=0)
     
     # Configuración
-    is_active = Column(Boolean, default=True)
-    priority = Column(Integer, default=5)  # 1-10, mayor = más prioridad
+    is_active: Mapped[bool] = Column(Boolean, default=True)
+    priority: Mapped[int] = Column(Integer, default=5)  # 1-10, mayor = más prioridad
     
-    # Relaciones
-    print_jobs: List["PrintJob"] = relationship(
-        "PrintJob",
-        back_populates="printer",
-        cascade="all, delete-orphan",
-    )
+    # Relaciones - comentada por ahora hasta crear el modelo PrintJob
+    # print_jobs: Mapped[List["PrintJob"]] = relationship(
+    #     "PrintJob",
+    #     back_populates="printer",
+    #     cascade="all, delete-orphan",
+    # )
     
     def __repr__(self) -> str:
         """Representación del objeto."""
