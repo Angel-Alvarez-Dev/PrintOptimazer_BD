@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: printoptimizer_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-printopt_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-printopt_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-printoptimizer_db}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - printoptimizer_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-printopt_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: printoptimizer_app
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-printopt_user}:${DB_PASSWORD:-printopt_pass}@db:5432/${DB_NAME:-printoptimizer_db}
+      APP_ENV: ${APP_ENV:-development}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+    volumes:
+      - ../src:/app/src:ro
+      - ../alembic.ini:/app/alembic.ini:ro
+      - app_logs:/app/logs
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - printoptimizer_network
+    command: >
+      sh -c "
+        echo 'Esperando a que la base de datos esté lista...' &&
+        sleep 5 &&
+        alembic upgrade head &&
+        uvicorn src.printoptimizer.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+volumes:
+  postgres_data:
+    name: printoptimizer_postgres_data
+  app_logs:
+    name: printoptimizer_app_logs
+
+networks:
+  printoptimizer_network:
+    driver: bridge
+    name: printoptimizer_network

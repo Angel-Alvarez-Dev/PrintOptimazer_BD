@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: development
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../alembic.ini:/app/alembic.ini
+      - ../scripts:/app/scripts
+    environment:
+      DEBUG: "True"
+      RELOAD: "True"
+    command: >
+      sh -c "
+        pip install -r requirements-dev.txt &&
+        alembic upgrade head &&
+        uvicorn src.printoptimizer.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: printoptimizer_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@printoptimizer.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - db
+    networks:
+      - printoptimizer_network
+
+volumes:
+  pgadmin_data:
+    name: printoptimizer_pgadmin_data
