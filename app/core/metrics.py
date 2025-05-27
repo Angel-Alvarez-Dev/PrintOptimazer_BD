@@ -1,4 +1,7 @@
 # app/core/metrics.py
+
+
+
 """
 Business metrics and KPI tracking
 """
@@ -9,7 +12,22 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_
 from app.models.models import Project, Quote, Material, User, ModelFile
+from prometheus_client import Counter, Histogram
+
 import asyncio
+
+# Contador de fallos por tarea
+CELERY_TASK_FAILURES = Counter(
+    "celery_task_failures_total",
+    "Número total de ejecuciones fallidas de tareas Celery",
+    ["task_name"],
+)
+# Histograma de duración por tarea
+CELERY_TASK_DURATION = Histogram(
+    "celery_task_duration_seconds",
+    "Duración de ejecución de tareas Celery (segundos)",
+    ["task_name"],
+)
 
 @dataclass
 class BusinessMetrics:

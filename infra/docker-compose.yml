@@ -62,3 +62,16 @@ services:
 volumes:
   postgres_data:
   redis_data:
+
+
+groups:
+  - name: celery_alerts
+    rules:
+      - alert: HighCeleryTaskFailures
+        expr: rate(celery_task_failures_total[5m]) > 5
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Muchas tareas Celery fallidas"
+          description: "La tasa de fallos de tareas Celery supera 5 fallos/5m durante más de 10 minutos."

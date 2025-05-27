@@ -2,6 +2,9 @@
 from celery import Celery
 from celery.schedules import crontab
 from app.core.config import settings
+import time
+from celery.signals import task_prerun, task_postrun, task_failure
+from app.core.metrics import CELERY_TASK_FAILURES, CELERY_TASK_DURATION
 
 # Instancia de Celery
 celery_app = Celery(
@@ -47,3 +50,21 @@ celery_app.conf.update(
         },
     }
 )
+
+@task_prerun.connect
+def _task_prerun_handler(sender=None, task_id=None, task=None, **kwargs):
+    # Marca el inicio
+    setattr(task, "_start_time", time.time())
+
+@task_postrun.connect
+def _task_postrun_handler(sender=None, task_id=None, task=None, **kwargs):
+    # Calcula y registra la duración
+    start = getattr(task, "_start_time", None)
+    if start is not None:
+        duration = time.time() - start
+        CELERY_TASK_DURATION.labels(task_name=sender.name).observe(duration)
+
+@task_failure.connect
+def _task_failure_handler(sender=None, task_id=None, exception=None, **kwargs):
+    # Incrementa el contador de fallos
+    CELERY_TASK_FAILURES.labels(task_name=sender.name).inc()
