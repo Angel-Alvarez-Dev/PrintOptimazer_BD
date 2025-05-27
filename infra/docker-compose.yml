@@ -1,4 +1,6 @@
+# docker-compose.yml
 version: '3.8'
+
 services:
   db:
     image: postgres:15-alpine
@@ -8,14 +10,55 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
     depends_on:
       - db
+      - redis
     env_file:
       - .env
     ports:
       - "8000:8000"
+    command: >
+      sh -c "uvicorn app.api.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  worker:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+    command: >
+      celery -A app.core.celery worker \
+             --loglevel=info --concurrency=4
+
+  beat:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    depends_on:
+      - redis
+      - db
+    env_file:
+      - .env
+    command: >
+      celery -A app.core.celery beat \
+             --loglevel=info
 
 volumes:
   postgres_data:
+  redis_data:
